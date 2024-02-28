@@ -1,17 +1,21 @@
 import { format, addMinutes } from 'date-fns'
+import { MAKE_ADD_TO_CALENDAR, MAKE_GET_FROM_CALENDAR } from 'src/config'
 
 /**
  * get calendar
  * @returns 
  */
 const getCurrentCalendar = async (): Promise<string> => {
-    const dataCalendarApi = await fetch('https://hook.eu2.make.com/yvwkwwxs82vw3o23j7ndtv3luhtvucus')
+    const dataCalendarApi = await fetch(MAKE_GET_FROM_CALENDAR)
     const json: any[] = await dataCalendarApi.json()
     const list = json.reduce((prev, current) => {
+
+        if (!current.fecha) return prev
+
         return prev += [
             `Espacio reservado (no disponible): `,
-            `Desde ${format(current.date, 'eeee do h:mm a')} `,
-            `Hasta ${format(addMinutes(current.date, 45), 'eeee do h:mm a')} \n`,
+            `Desde ${format(current.fecha, 'eeee do h:mm a')} `,
+            `Hasta ${format(addMinutes(current.fecha, 45), 'eeee do h:mm a')} \n`,
         ].join(' ')
     }, '')
     return list
@@ -26,7 +30,7 @@ const appToCalendar = async (text: string) => {
     try {
         const payload = JSON.parse(text)
         console.log(payload)
-        const dataApi = await fetch('https://hook.eu2.make.com/nrbolpvmtt730jgyepvpb4qz3c0145s6', {
+        const dataApi = await fetch(MAKE_ADD_TO_CALENDAR, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",

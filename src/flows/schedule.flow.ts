@@ -32,11 +32,11 @@ INSTRUCCIONES:
 -----------------------------
 Respuesta útil en primera persona:`
 
-const generateSchedulePrompt = (summary: string, history: string) => {
+const generateSchedulePrompt = (summary: string, history: string, prompt: string) => {
     const nowDate = getFullCurrentDate()
-    const mainPrompt = PROMPT_SCHEDULE
+    const mainPrompt = prompt
         .replace('{AGENDA_ACTUAL}', summary)
-        .replace('{HISTORIAL_CONVERSACION}', history)
+        .replace('{HISTORY}', history)
         .replace('{CURRENT_DAY}', nowDate)
 
     return mainPrompt
@@ -48,9 +48,10 @@ const generateSchedulePrompt = (summary: string, history: string) => {
 const flowSchedule = addKeyword(EVENTS.ACTION).addAction(async (ctx, { extensions, state, flowDynamic }) => {
     await flowDynamic('dame un momento para consultar la agenda...')
     const ai = extensions.ai as AIClass
+    const prompts = extensions.prompts
     const history = getHistoryParse(state)
     const list = await getCurrentCalendar()
-    const promptSchedule = generateSchedulePrompt(list?.length ? list : 'ninguna', history)
+    const promptSchedule = generateSchedulePrompt(list?.length ? list : 'ninguna', history, prompts.agendar)
 
     const text = await ai.createChat([
         {

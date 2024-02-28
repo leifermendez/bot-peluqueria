@@ -40,6 +40,7 @@ const flowConfirm = addKeyword(EVENTS.ACTION).addAction(async (_, { flowDynamic 
 }).addAction({ capture: true }, async (ctx, { state, flowDynamic, extensions }) => {
     await state.update({ name: ctx.body })
     const ai = extensions.ai as AIClass
+
     const history = getHistoryParse(state)
     const text = await ai.createChat([
         {
